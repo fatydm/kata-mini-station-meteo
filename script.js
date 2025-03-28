@@ -10,11 +10,14 @@ async function fetchCoordinates(query) {
 }
 
 async function fetchWeather(latitude, longitude) {
-    const response = await fetch(`https://api.open-meteo.com/v1/forecast?${latitude}=52.52&${longitude}=13.41&hourly=temperature_2m`);
-    const data = await response.json();
-    console.log('la météo du pays', data);
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,precipitation,relative_humidity_2m`;
+  
+    const response = await fetch(url);
 
-    return data;
+    const data = await response.json();
+    console.log('la météo du pays', data.current.temperature_2m);
+
+    return data.current.temperature_2m;
 }
 
 let cityInput = document.getElementById('cityInput');
@@ -38,12 +41,20 @@ button.addEventListener('click', async () => {
         gps.innerText = "Coordonnées non trouvées";
     }
 
-    let weather = await fetchWeather(coordinates[0].lat, coordinates[0].lon);
+    let lat = coordinates[0].lat;
+    let lon = coordinates[0].lon;
+
+    console.log('latitude', lat);
+    console.log('longitude', lon);
+    
+
+    let weather = await fetchWeather(lat, lon);
+    console.log('la météo du pays', weather);
+
     temperature.innerText = weather
     if (!weather) {
         temperature.innerText = "Météo indisponible";
     }
-    
 
     details.innerText = 'Température actuelle';
 });
